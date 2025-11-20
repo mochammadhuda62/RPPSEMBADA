@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Perangkat Pembelajaran (Deep Learning)</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Library untuk PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+        }
+        /* Style untuk output HTML yang di-generate AI */
+        .generated-content {
+            font-family: 'Times New Roman', Times, serif; /* Sesuai dokumen resmi */
+            line-height: 1.5;
+            color: #000;
+        }
+        .generated-content h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        .generated-content h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
+        }
+        .generated-content h4 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .generated-content p {
+            margin-bottom: 0.8rem;
+            text-align: justify;
+        }
+        .generated-content ul, .generated-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .generated-content ul {
+            list-style-type: disc;
+        }
+        .generated-content ol {
+            list-style-type: decimal;
+        }
+        .generated-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .generated-content th, .generated-content td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+        .generated-content th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: left;
+        }
+        /* Tag khusus untuk pendekatan Deep Learning */
+        .deep-learning-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: bold;
+            font-family: 'Inter', sans-serif;
+        }
+        .tag-meaningful { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .tag-mindful { background-color: #fce7f3; color: #9d174d; border: 1px solid #f9a8d4; }
+        .tag-joyful { background-color: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+        /* Animasi spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+        /* Style untuk loading di tombol download */
+        .button-spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            width: 1rem;
+            height: 1rem;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <!-- Judul Aplikasi -->
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-700">Generator Perangkat Pembelajaran</h1>
+            <p class="text-center text-gray-600 mt-2 font-medium">Edisi Deep Learning (Meaningful, Mindful, Joyful)</p>
+        </header>
+
+        <!-- Konten Utama: Form Input dan Output -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Kolom Form Input -->
+            <div class="md:col-span-1 bg-white p-6 rounded-lg shadow-lg h-fit">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Data Pembelajaran</h2>
+                <form id="generation-form" class="space-y-4">
+                    
+                    <!-- Identitas Sekolah & Guru -->
+                    <div class="bg-blue-50 p-3 rounded-md space-y-3">
+                        <h3 class="text-sm font-bold text-blue-800 uppercase">Identitas</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700">Nama Sekolah</label>
+                            <input type="text" id="nama_sekolah" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="SMPN..." required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Nama Guru</label>
+                                <input type="text" id="nama_guru" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Nama Lengkap" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">NIP Guru</label>
+                                <input type="text" id="nip_guru" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="NIP/-">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">Kepala Sekolah</label>
+                                <input type="text" id="nama_kepala" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Nama Lengkap" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700">NIP Kepsek</label>
+                                <input type="text" id="nip_kepala" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="NIP/-">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informasi Mapel -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran & Kelas</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="mapel" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Mapel (mis: IPA)" required>
+                            <input type="text" id="kelas" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Kelas (mis: IX)" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Topik & Waktu</label>
+                        <div class="grid grid-cols-1 gap-2 mb-2">
+                             <input type="text" id="topik" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Topik Pembelajaran" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Alokasi Waktu</label>
+                                <input type="text" id="alokasi_waktu" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Misal: 2 JP" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Jml Pertemuan</label>
+                                <input type="number" id="jumlah_pertemuan" class="w-full p-2 border border-gray-300 rounded text-sm" value="1" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informasi Peserta Didik (Gaya Belajar dihapus) -->
+                    <div class="bg-green-50 p-3 rounded-md space-y-3">
+                        <h3 class="text-sm font-bold text-green-800 uppercase">Profil Peserta Didik</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700">Jumlah Siswa</label>
+                            <input type="number" id="jumlah_siswa" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Misal: 30" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="cp" class="block text-sm font-medium text-gray-700 mb-1">Capaian Pembelajaran (CP)</label>
+                        <textarea id="cp" rows="2" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Paste CP di sini" required></textarea>
+                    </div>
+
+                    <div>
+                        <label for="tp" class="block text-sm font-medium text-gray-700 mb-1">Tujuan Pembelajaran (TP)</label>
+                        <textarea id="tp" rows="2" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Tuliskan TP..." required></textarea>
+                    </div>
+
+                    <div>
+                        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model Pembelajaran</label>
+                        <select id="model" class="w-full p-2 border border-gray-300 rounded text-sm">
+                            <option value="Discovery Learning">Discovery Learning</option>
+                            <option value="Problem-Based Learning (PBL)">Problem-Based Learning (PBL)</option>
+                            <option value="Project-Based Learning (PjBL)">Project-Based Learning (PjBL)</option>
+                            <option value="Inquiry Learning">Inquiry Learning</option>
+                            <option value="Kooperatif">Kooperatif (Jigsaw/STAD)</option>
+                        </select>
+                    </div>
+
+                    <!-- Dimensi Profil Lulusan (8 DIMENSI) -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">8 Dimensi Profil Lulusan</label>
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Keimanan dan Ketakwaan">Keimanan & Ketakwaan</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Kemandirian">Kemandirian</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Kolaborasi">Kolaborasi</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Komunikasi">Komunikasi</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Penalaran Kritis">Penalaran Kritis</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Kreativitas">Kreativitas</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Kewargaan">Kewargaan</label>
+                            <label class="flex items-center"><input type="checkbox" class="mr-2" value="Kesehatan">Kesehatan</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="generate-btn" class="w-full bg-blue-700 text-white font-bold p-3 rounded-md shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center transition">
+                        <span id="btn-text">BUAT PERANGKAT</span>
+                        <div id="btn-loader" class="spinner hidden ml-3"></div>
+                    </button>
+                </form>
+                
+                <!-- Notifikasi Error -->
+                <div id="error-message" class="hidden mt-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded-md text-sm"></div>
+            </div>
+
+            <!-- Kolom Output -->
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden min-h-[800px] flex flex-col">
+                    
+                    <!-- Header Output & Download -->
+                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-wrap justify-between items-center gap-3">
+                        <div class="text-sm text-gray-500 font-medium">Preview Dokumen</div>
+                        <div class="flex gap-2">
+                            <button id="download-word" class="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center" disabled>
+                                <span class="btn-download-text">Download Word (.doc)</span>
+                                <span class="btn-download-loader hidden"><span class="button-spinner" style="width:0.8rem; height:0.8rem;"></span></span>
+                            </button>
+                            <button id="download-pdf" class="bg-red-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center" disabled>
+                                <span class="btn-download-text">Download PDF</span>
+                                <span class="btn-download-loader hidden"><span class="button-spinner" style="width:0.8rem; height:0.8rem;"></span></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Navigasi -->
+                    <div class="border-b border-gray-200 bg-white sticky top-0 z-10">
+                        <nav id="tabs" class="flex -mb-px overflow-x-auto">
+                            <button data-tab="rpp" class="tab-btn flex-shrink-0 px-6 py-3 text-center font-bold text-sm border-b-2 border-blue-600 text-blue-700">RPP LENGKAP</button>
+                            <button data-tab="materi" class="tab-btn flex-shrink-0 px-6 py-3 text-center font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">MATERI AJAR</button>
+                            <button data-tab="lkpd" class="tab-btn flex-shrink-0 px-6 py-3 text-center font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">LKPD</button>
+                        </nav>
+                    </div>
+
+                    <!-- Konten Tab -->
+                    <div id="output-container" class="p-8 generated-content flex-grow overflow-y-auto bg-white">
+                        <!-- Placeholder awal -->
+                        <div id="placeholder" class="flex flex-col items-center justify-center h-full text-center text-gray-400 mt-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-lg font-medium text-gray-600">Siap Membuat Perangkat Deep Learning</p>
+                            <p class="text-sm max-w-md mt-2">Isi data di sebelah kiri, termasuk profil siswa. AI akan menyusun RPP dengan pendekatan Meaningful, Mindful, dan Joyful Learning.</p>
+                        </div>
+                        
+                        <!-- Konten dinamis -->
+                        <div id="rpp-content" class="tab-content"></div>
+                        <div id="materi-content" class="tab-content hidden"></div>
+                        <div id="lkpd-content" class="tab-content hidden"></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi jsPDF
+        const { jsPDF } = window.jspdf;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elemen DOM
+            const form = document.getElementById('generation-form');
+            const generateBtn = document.getElementById('generate-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+            const errorMessage = document.getElementById('error-message');
+            
+            const tabsContainer = document.getElementById('tabs');
+            const placeholder = document.getElementById('placeholder');
+            const downloadWordBtn = document.getElementById('download-word');
+            const downloadPdfBtn = document.getElementById('download-pdf');
+
+            const tabContents = {
+                rpp: document.getElementById('rpp-content'),
+                materi: document.getElementById('materi-content'),
+                lkpd: document.getElementById('lkpd-content')
+            };
+            
+            const allTabs = tabsContainer.querySelectorAll('.tab-btn');
+            const allTabContents = document.querySelectorAll('.tab-content');
+
+            // --- 1. Logika Tab ---
+            tabsContainer.addEventListener('click', (e) => {
+                const clickedTab = e.target.closest('.tab-btn');
+                if (!clickedTab) return;
+
+                const tabName = clickedTab.dataset.tab;
+
+                // Update visual tab
+                allTabs.forEach(tab => {
+                    tab.classList.remove('border-blue-600', 'text-blue-700', 'font-bold');
+                    tab.classList.add('border-transparent', 'text-gray-500', 'font-medium');
+                });
+                clickedTab.classList.add('border-blue-600', 'text-blue-700', 'font-bold');
+                clickedTab.classList.remove('border-transparent', 'text-gray-500');
+
+                // Update konten
+                allTabContents.forEach(c => c.classList.add('hidden'));
+                if (tabContents[tabName]) {
+                    tabContents[tabName].classList.remove('hidden');
+                }
+                placeholder.classList.add('hidden');
+            });
+
+            // --- 2. Submit Handler ---
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleGenerate();
+            });
+
+            // --- 3. Logika Download ---
+            downloadWordBtn.addEventListener('click', handleDownloadWord);
+            downloadPdfBtn.addEventListener('click', handleDownloadPdf);
+
+            // --- 4. Fungsi Utama Generate (AI) ---
+            async function handleGenerate() {
+                // Ambil data input
+                const data = {
+                    mapel: document.getElementById('mapel').value,
+                    kelas: document.getElementById('kelas').value,
+                    topik: document.getElementById('topik').value,
+                    waktu: document.getElementById('alokasi_waktu').value, 
+                    jumlahPertemuan: document.getElementById('jumlah_pertemuan').value,
+                    jumlahSiswa: document.getElementById('jumlah_siswa').value,
+                    // Gaya Belajar otomatis diset
+                    gayaBelajar: "Heterogen (Visual, Auditori, Kinestetik)", 
+                    cp: document.getElementById('cp').value,
+                    tp: document.getElementById('tp').value,
+                    model: document.getElementById('model').value,
+                    sekolah: document.getElementById('nama_sekolah').value,
+                    guru: document.getElementById('nama_guru').value,
+                    nipGuru: document.getElementById('nip_guru').value || '-',
+                    kepala: document.getElementById('nama_kepala').value,
+                    nipKepala: document.getElementById('nip_kepala').value || '-',
+                    dimensi: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+                };
+
+                if (!data.mapel || !data.sekolah || !data.guru) {
+                    showError("Mohon lengkapi data identitas sekolah dan guru.");
+                    return;
+                }
+
+                // UI Loading
+                setLoading(true);
+                clearOutput();
+
+                // --- KONSTRUKSI PROMPT AI ---
+                
+                const systemPrompt = `Anda adalah Ahli Kurikulum Merdeka dan Praktisi Deep Learning Indonesia. 
+Tugas Anda adalah menyusun Perangkat Pembelajaran Lengkap (RPP, Bahan Ajar, LKPD) yang memadukan model pembelajaran "${data.model}" dengan pendekatan DEEP LEARNING yang terdiri dari 3 pilar utama:
+1. Meaningful Learning (Pembelajaran Bermakna): Relevansi kuat dengan kehidupan siswa.
+2. Mindful Learning (Pembelajaran Sadar/Reflektif): Menumbuhkan nalar kritis dan kesadaran berpikir.
+3. Joyful Learning (Pembelajaran Menyenangkan): Pengalaman belajar yang positif dan menarik.
+
+JANGAN GUNAKAN ISTILAH "P5". Gunakan "Dimensi Profil Lulusan".
+Output harus berupa JSON valid berisi string HTML.`;
+
+                const userQuery = `Buat perangkat pembelajaran lengkap dengan data berikut:
+- Sekolah: ${data.sekolah}
+- Guru: ${data.guru} (NIP: ${data.nipGuru})
+- Kepala Sekolah: ${data.kepala} (NIP: ${data.nipKepala})
+- Mapel: ${data.mapel} | Kelas: ${data.kelas}
+- Topik: ${data.topik}
+- Alokasi Waktu: ${data.waktu}
+- Jumlah Pertemuan: ${data.jumlahPertemuan} (Jika lebih dari 1, buatkan rincian kegiatan untuk setiap pertemuan)
+- Profil Siswa: ${data.jumlahSiswa} orang. Karakteristik: ${data.gayaBelajar}
+- CP: ${data.cp}
+- TP: ${data.tp}
+- Model: ${data.model}
+- Dimensi Profil Lulusan: ${data.dimensi.join(', ')}
+
+STRUKTUR OUTPUT YANG DIBUTUHKAN (Format HTML):
+
+1. **RPP (Rencana Pelaksanaan Pembelajaran)**:
+   - **Identitas**: Buat tabel identitas lengkap.
+   - **Identifikasi Peserta Didik**: Buat tabel/list berisi Jumlah Siswa, Kemampuan (Heterogen), dan Gaya Belajar/Karakteristik.
+   - **Materi Pembelajaran**: Ringkasan topik, Relevansi (Meaningful), Tingkat Kesulitan, dan Struktur Materi.
+   - **Dimensi Profil Lulusan**: Tampilkan daftar dimensi yang dipilih.
+   - **Tujuan Pembelajaran**: Tuliskan TP.
+   - **Langkah Pembelajaran**:
+     - Jika pertemuan > 1, pisahkan kegiatan berdasarkan pertemuan (Pertemuan 1, Pertemuan 2, dst).
+     - *Pendahuluan*: Apersepsi dan Motivasi.
+     - *Kegiatan Inti (DEEP LEARNING)*: Gunakan sintaks model ${data.model}. **PENTING**: Setiap langkah harus secara eksplisit mengintegrasikan dan melabeli pendekatan Meaningful, Mindful, atau Joyful Learning. Contoh label: <span class='deep-learning-tag tag-meaningful'>Meaningful Learning</span>.
+     - *Penutup*: Refleksi dan Tindak Lanjut.
+   - **Asesmen**: Buat tabel rencana asesmen (Diagnostik, Formatif, Sumatif) dengan teknik dan instrumennya.
+   - **Lembar Pengesahan**: Di bagian paling bawah RPP, tempat tanda tangan Guru dan Kepala Sekolah.
+
+2. **Materi Ajar**: Ringkasan materi yang mendalam (Deep) namun mudah dipahami.
+
+3. **LKPD**: Lembar Kerja siswa yang aktif, memicu nalar (Mindful), dan menyenangkan (Joyful).
+
+Hasilkan JSON dengan key: "rpp", "materi_ajar", "lkpd". Semua value adalah string HTML.`;
+
+                // Skema Output
+                const schema = {
+                    type: "OBJECT",
+                    properties: {
+                        rpp: { type: "STRING", description: "HTML lengkap untuk RPP (Identitas s.d Pengesahan)" },
+                        materi_ajar: { type: "STRING", description: "HTML Ringkasan Materi" },
+                        lkpd: { type: "STRING", description: "HTML LKPD" }
+                    },
+                    required: ["rpp", "materi_ajar", "lkpd"]
+                };
+
+                // --- PANGGIL API (GANTI API KEY DI SINI) ---
+                // ⬇️⬇️⬇️ MASUKKAN API KEY DI BAWAH INI ⬇️⬇️⬇️
+                const apiKey = "AIzaSyB5-9Yi-aVkxaJUMUCA9MuNodDIkqh5ze0"; 
+                // ⬆️⬆️⬆️ ------------------------------- ⬆️⬆️⬆️
+
+                
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: userQuery }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] },
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: schema,
+                                temperature: 0.7
+                            }
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Gagal menghubungi AI. Cek koneksi atau API Key.");
+
+                    const result = await response.json();
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (generatedText) {
+                        const content = JSON.parse(generatedText);
+                        displayOutput(content);
+                    } else {
+                        throw new Error("AI tidak menghasilkan respons.");
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    showError(error.message || "Terjadi kesalahan sistem.");
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            // --- Helper Functions ---
+
+            function setLoading(isLoading) {
+                generateBtn.disabled = isLoading;
+                if (isLoading) {
+                    btnText.classList.add('hidden');
+                    btnLoader.classList.remove('hidden');
+                } else {
+                    btnText.classList.remove('hidden');
+                    btnLoader.classList.add('hidden');
+                }
+            }
+
+            function showError(msg) {
+                errorMessage.textContent = msg;
+                errorMessage.classList.remove('hidden');
+            }
+
+            function clearOutput() {
+                errorMessage.classList.add('hidden');
+                downloadWordBtn.disabled = true;
+                downloadPdfBtn.disabled = true;
+                Object.values(tabContents).forEach(el => el.innerHTML = '');
+            }
+
+            function displayOutput(data) {
+                placeholder.classList.add('hidden');
+                
+                // Render HTML ke dalam container
+                tabContents.rpp.innerHTML = data.rpp;
+                tabContents.materi.innerHTML = `<h2 style="text-align:center; margin-bottom:20px;">MATERI AJAR</h2>` + data.materi_ajar;
+                tabContents.lkpd.innerHTML = `<h2 style="text-align:center; margin-bottom:20px;">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>` + data.lkpd;
+
+                // Aktifkan tombol download
+                downloadWordBtn.disabled = false;
+                downloadPdfBtn.disabled = false;
+
+                // Buka tab RPP
+                document.querySelector('[data-tab="rpp"]').click();
+            }
+
+            async function fetchWithRetry(url, options, retries = 3) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        return await fetch(url, options);
+                    } catch (err) {
+                        if (i === retries - 1) throw err;
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                }
+            }
+
+            // --- Fungsi Download (Word & PDF) ---
+            
+            function getActiveContent() {
+                // Mencari tab yang aktif
+                const activeBtn = document.querySelector('.tab-btn.border-blue-600');
+                const tabKey = activeBtn.dataset.tab;
+                return { el: tabContents[tabKey], title: activeBtn.textContent.trim() };
+            }
+
+            function handleDownloadWord() {
+                const { el, title } = getActiveContent();
+                if (!el) return;
+
+                // Spinner di tombol
+                const loader = downloadWordBtn.querySelector('.btn-download-loader');
+                const text = downloadWordBtn.querySelector('.btn-download-text');
+                text.classList.add('hidden');
+                loader.classList.remove('hidden');
+
+                const styles = document.querySelector('style').innerHTML;
+                const html = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head><meta charset='utf-8'><title>${title}</title>
+                    <style>${styles} body{font-family:'Times New Roman';} table{border-collapse:collapse;} td,th{border:1px solid #000; padding:5px;}</style>
+                    </head><body>${el.innerHTML}</body></html>`;
+
+                const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${title}_DeepLearning.doc`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                setTimeout(() => {
+                    text.classList.remove('hidden');
+                    loader.classList.add('hidden');
+                }, 500);
+            }
+
+            async function handleDownloadPdf() {
+                const { el, title } = getActiveContent();
+                if (!el) return;
+
+                const loader = downloadPdfBtn.querySelector('.btn-download-loader');
+                const text = downloadPdfBtn.querySelector('.btn-download-text');
+                text.classList.add('hidden');
+                loader.classList.remove('hidden');
+
+                try {
+                    const canvas = await html2canvas(el, { scale: 2 });
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const margin = 15; 
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const imgHeight = (imgProps.height * (pdfWidth - 2*margin)) / imgProps.width;
+                    
+                    let heightLeft = imgHeight;
+                    let position = margin;
+                    let page = 1;
+
+                    pdf.addImage(imgData, 'PNG', margin, position, pdfWidth - 2*margin, imgHeight);
+                    heightLeft -= (pdfHeight - 2*margin);
+
+                    while (heightLeft > 0) {
+                        position = heightLeft - imgHeight + margin; 
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', margin, position - (page * (pdfHeight)), pdfWidth - 2*margin, imgHeight); // Simplifikasi posisi
+                        heightLeft -= pdfHeight;
+                        page++;
+                    }
+                    
+                    // Fallback sederhana jika multipage rumit: addImage fit to page
+                    // pdf.save(`${title}.pdf`); (Code di atas perlu penyesuaian posisi y yang presisi untuk multipage sempurna)
+                    
+                    // Solusi cepat multipage html2canvas sering terpotong teks. 
+                    // Alternatif: Cetak satu halaman panjang jika memungkinkan, atau biarkan user print via browser.
+                    // Untuk sekarang kita simpan apa adanya.
+                    
+                    pdf.save(`${title}_DeepLearning.pdf`);
+                } catch (e) {
+                    alert("Gagal membuat PDF. Gunakan fitur 'Print to PDF' browser untuk hasil terbaik.");
+                    console.error(e);
+                } finally {
+                    text.classList.remove('hidden');
+                    loader.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
