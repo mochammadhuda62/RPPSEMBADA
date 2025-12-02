@@ -394,14 +394,10 @@ STRUKTUR HTML OUTPUT:
 
                 // --- API CALL ---
                 // ⬇️⬇️⬇️ PASTE API KEY DI SINI ⬇️⬇️⬇️
-                const apiKey = ""; 
+                const apiKey = "AIzaSyB5-9Yi-aVkxaJUMUCA9MuNodDIkqh5ze0"; 
                 // ⬆️⬆️⬆️ --------------------- ⬆️⬆️⬆️
 
-                if (!apiKey) {
-                    showError("API Key kosong. Edit kode index.html baris 330.");
-                    setLoading(false);
-                    return;
-                }
+
 
                 try {
                     const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
@@ -577,3 +573,4 @@ STRUKTUR HTML OUTPUT:
     </script>
 </body>
 </html>
+
