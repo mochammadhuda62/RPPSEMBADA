@@ -1,4 +1,0 @@
-# File ini memberitahu Netlify cara membangun situs Anda.
-[build]
-  # Tentukan lokasi folder serverless function kita
-  functions = "netlify/functions"
